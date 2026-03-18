@@ -48,6 +48,6 @@ public class Bike {
     
     @Override
     public String toString(){
-        return "Bike ID: " +bikeID + "Model: " +model+ "Available: "+available;
+        return "Bike ID: " +bikeID + " Model: " +model+ " Available: "+available;
     }
 }

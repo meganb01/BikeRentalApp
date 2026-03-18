@@ -4,6 +4,8 @@
  */
 package bikerentalsystem;
 
+import bikerentalsystem.gui.BikeRentalAppGUI;
+
 /**
  *
  * @author megan
@@ -14,7 +16,8 @@ public class BikeRentalApp {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        BikeRentalAppGUI myGUI = new BikeRentalAppGUI();
+        myGUI.setVisible(true);
     }
     
 }
