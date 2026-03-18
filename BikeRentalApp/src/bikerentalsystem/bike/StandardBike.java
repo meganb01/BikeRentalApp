@@ -16,7 +16,7 @@ public class StandardBike extends Bike {
     
     @Override
     public String toString(){
-        return "Standard Bike -> " +super.toString();
+        return "Standard Bike: " +super.toString();
     }
     
 }

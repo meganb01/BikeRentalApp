@@ -8,20 +8,27 @@ import bikerentalsystem.adt.BikeLinkedList;
 import bikerentalsystem.adt.BikeStack;
 import bikerentalsystem.adt.UserQueue;
 import bikerentalsystem.bike.Bike;
+import bikerentalsystem.bike.ElectricBike;
+import bikerentalsystem.bike.StandardBike;
 import bikerentalsystem.user.User;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * Main GUI class for the bike rental system.
+ * This class manages bike inventory, user requests, and returned bikes.
+ * Uses BikeLinkedList, BikeStack, and UserQueue to handle data
  * @author megan
  */
 public class BikeRentalAppGUI extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(BikeRentalAppGUI.class.getName());
     
+    //data members
     private BikeLinkedList allBikes;
     private BikeStack returnedBikes;
     private UserQueue waitingUsers;
@@ -31,12 +38,12 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
      */
     public BikeRentalAppGUI() {
         initComponents();
-        //initialise data structures
+        //initialise data members
         allBikes = new BikeLinkedList();
         returnedBikes = new BikeStack();
         waitingUsers = new UserQueue();
         
-        //set default visible panel
+        //set default visible panel to the Bikes panel
         panelBikes.setVisible(true);
         panelUsers.setVisible(false);
         panelReturns.setVisible(false);
@@ -45,6 +52,18 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
         txtAreaBikes.setEditable(false);
         txtAreaQueue.setEditable(false);
         txtAreaReturned.setEditable(false);
+        
+        //enable/disable battery input depending on bike type selection
+        cmbBikeType.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if(cmbBikeType.getSelectedItem().equals("Electric")){
+                    txtBattery.setEnabled(true);
+                } else {
+                    txtBattery.setEnabled(false);
+                    txtBattery.setText("");
+                }
+            }
+        });
     }
 
     /**
@@ -65,7 +84,6 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
         lblBikeID = new javax.swing.JLabel();
         lblBikeType = new javax.swing.JLabel();
         txtBikeID = new javax.swing.JTextField();
-        txtBikeType = new javax.swing.JTextField();
         btnAdd = new javax.swing.JButton();
         btnRemove = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
@@ -74,6 +92,9 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
         txtAreaBikes = new javax.swing.JTextArea();
         lblBikesTitle = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        cmbBikeType = new javax.swing.JComboBox<>();
+        txtBattery = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
         panelUsers = new javax.swing.JPanel();
         lblUserID = new javax.swing.JLabel();
         lblUserName = new javax.swing.JLabel();
@@ -180,9 +201,6 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
         txtBikeID.setForeground(new java.awt.Color(85, 85, 85));
         txtBikeID.setText("Enter numeric ID....");
 
-        txtBikeType.setForeground(new java.awt.Color(85, 85, 85));
-        txtBikeType.setText("(Standard/Electric)....");
-
         btnAdd.setBackground(new java.awt.Color(46, 125, 50));
         btnAdd.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnAdd.setForeground(new java.awt.Color(232, 245, 233));
@@ -239,6 +257,21 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(85, 85, 85));
         jLabel5.setText("Add, update, remove, or view bikes using their ID.");
 
+        cmbBikeType.setForeground(new java.awt.Color(85, 85, 85));
+        cmbBikeType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Standard", "Electric" }));
+
+        txtBattery.setForeground(new java.awt.Color(85, 85, 85));
+        txtBattery.setText("0-100%....");
+        txtBattery.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBatteryActionPerformed(evt);
+            }
+        });
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(60, 60, 60));
+        jLabel8.setText("Battery:");
+
         javax.swing.GroupLayout panelBikesLayout = new javax.swing.GroupLayout(panelBikes);
         panelBikes.setLayout(panelBikesLayout);
         panelBikesLayout.setHorizontalGroup(
@@ -259,7 +292,12 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addGroup(panelBikesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtBikeID)
-                                    .addComponent(txtBikeType, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE))))
+                                    .addGroup(panelBikesLayout.createSequentialGroup()
+                                        .addComponent(cmbBikeType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtBattery, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(18, 18, 18)
                         .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
@@ -293,13 +331,15 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelBikesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblBikeType)
-                    .addComponent(txtBikeType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnUpdate))
+                    .addComponent(btnUpdate)
+                    .addComponent(cmbBikeType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtBattery, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
                 .addGap(18, 18, 18)
                 .addComponent(btnDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(98, Short.MAX_VALUE))
         );
 
         panelUsers.setBackground(new java.awt.Color(232, 245, 233));
@@ -591,30 +631,39 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
+        //read input values and add a bike to the system
         try {
             int id = Integer.parseInt(txtBikeID.getText());
-            String model = txtBikeType.getText();
+            String type = cmbBikeType.getSelectedItem().toString();
+            Bike bike;
 
-            if(model.isEmpty()){
-                JOptionPane.showMessageDialog(this, "Bike Model cannot be empty");
-                return;
+            if(type.equals("Electric")) {
+                int battery = Integer.parseInt(txtBattery.getText());
+                bike = new ElectricBike(battery, id, type, true);
+            } else if(type.equals("Standard")) {
+                bike = new StandardBike(id, type, true);
+            }else{
+                bike = new Bike(id, type, true);
             }
 
-            Bike bike = new Bike(id, model, true);
             allBikes.add(bike);
-
+            
+            //clear input fields after adding
             txtBikeID.setText("");
-            txtBikeType.setText("");
-
+            txtBattery.setText("");
+            cmbBikeType.setSelectedIndex(0);
+            
+            //confirm to user
             JOptionPane.showMessageDialog(this, "Bike added successfully!");
-
-        } catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(this, "Bike ID must be a number");
+        }catch(NumberFormatException e) {
+            //diplay error if id or batter is not a number
+            JOptionPane.showMessageDialog(this, "Bike ID and Battery must be numbers");
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRequestActionPerformed
         // TODO add your handling code here:
+        //add a user to the waiting queue
          try {
             int userId = Integer.parseInt(txtUserID.getText());
             String userName = txtUserName.getText();
@@ -625,7 +674,7 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
             }
 
             User user = new User(userId, userName);
-            waitingUsers.enqueue(user);
+            waitingUsers.enqueue(user); //add user to queue
 
             JOptionPane.showMessageDialog(this, "User added to queue: " + user);
 
@@ -640,6 +689,7 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
 
     private void btnDisplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisplayActionPerformed
         // TODO add your handling code here:
+        //display all bikes in the system
         if(allBikes.isEmpty()){
             txtAreaBikes.setText("No bikes in the system");
             return;
@@ -647,13 +697,14 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
 
         StringBuilder sb = new StringBuilder();
         for(int i = 1; i <= allBikes.size(); i++){
-            sb.append(allBikes.get(i)).append("\n");
+            sb.append(allBikes.get(i)).append("\n"); //append each bikes info 
         }
         txtAreaBikes.setText(sb.toString());
     }//GEN-LAST:event_btnDisplayActionPerformed
 
     private void btnRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveActionPerformed
         // TODO add your handling code here:
+        //remove a bike from the system
         try {
             int bikeId = Integer.parseInt(txtBikeID.getText());
             boolean found = false;
@@ -661,7 +712,7 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
             for(int i = 1; i <= allBikes.size(); i++){
                 Bike b = allBikes.get(i);
                 if(b.getBikeID() == bikeId){
-                    allBikes.remove(i);
+                    allBikes.remove(i); //remove bike from linked list 
                     found = true;
                     JOptionPane.showMessageDialog(this, "Removed bike: " + b);
                     break;
@@ -674,22 +725,24 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
         } catch(NumberFormatException e){
             JOptionPane.showMessageDialog(this, "Bike ID must be a number");
         }
-
+        //clear input fields
         txtBikeID.setText("");
-        txtBikeType.setText("");
+        cmbBikeType.setSelectedIndex(0);
     }//GEN-LAST:event_btnRemoveActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
+        //update an existing bike's type in the system
         try {
             int bikeId = Integer.parseInt(txtBikeID.getText());
-            String newModel = txtBikeType.getText();
+            String newModel = cmbBikeType.getSelectedItem().toString();
             boolean found = false;
-
+            
+            //search for bike in linked list
             for(int i = 1; i <= allBikes.size(); i++){
                 Bike b = allBikes.get(i);
                 if(b.getBikeID() == bikeId){
-                    b.setModel(newModel);
+                    b.setModel(newModel); //update the bike type
                     found = true;
                     JOptionPane.showMessageDialog(this, "Updated bike: " + b);
                     break;
@@ -703,13 +756,15 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
         } catch(NumberFormatException e){
             JOptionPane.showMessageDialog(this, "Bike ID must be a number");
         }
-
+        
+        //clear input fields
         txtBikeID.setText("");
-        txtBikeType.setText("");
+        cmbBikeType.setSelectedIndex(0);
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnViewQueueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewQueueActionPerformed
         // TODO add your handling code here:
+        //display all users currently waiting in the queue
         if(waitingUsers.isEmpty()){
             txtAreaQueue.setText("No users in the queue");
             return;
@@ -718,14 +773,14 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
         StringBuilder sb = new StringBuilder();
         Queue<User> tempQueue = new LinkedList<>();
 
-        // We dequeue each user temporarily to display, then enqueue back
+        //temporarily dequeue to display users
         while(!waitingUsers.isEmpty()){
             User u = (User) waitingUsers.dequeue();
             sb.append(u).append("\n");
             tempQueue.add(u);
         }
 
-        // Put users back into the queue
+        //put users back into the queue
         while(!tempQueue.isEmpty()){
             waitingUsers.enqueue(tempQueue.remove());
         }
@@ -735,6 +790,7 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
 
     private void btnReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReturnActionPerformed
         // TODO add your handling code here:
+        //add a returned bike to the returned stack
         try {
             int bikeId = Integer.parseInt(txtReturnBikeID.getText());
             String model = txtReturnBikeModel.getText();
@@ -745,7 +801,7 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
             }
 
             Bike bike = new Bike(bikeId, model, true);
-            returnedBikes.push(bike);
+            returnedBikes.push(bike); //add bike to stack
 
             JOptionPane.showMessageDialog(this, "Bike returned successfully: " + bike);
 
@@ -764,6 +820,7 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
 
     private void btnDisplayStackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisplayStackActionPerformed
         // TODO add your handling code here:
+        //display all returned bikes
         if(returnedBikes.isEmpty()){
             txtAreaReturned.setText("No returned bikes in the system");
             return;
@@ -789,6 +846,7 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
 
     private void btnAssignActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAssignActionPerformed
         // TODO add your handling code here:
+        //assign the top returned bike to the first waiting user
         if(returnedBikes.isEmpty()){
             JOptionPane.showMessageDialog(this, "No returned bikes available");
             return;
@@ -799,11 +857,15 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
             return;
         }
 
-        Bike bike = (Bike) returnedBikes.pop();
-        User user = (User) waitingUsers.dequeue();
+        Bike bike = (Bike) returnedBikes.pop(); //remover bike from stack
+        User user = (User) waitingUsers.dequeue(); //remover user from queue
 
         JOptionPane.showMessageDialog(this, "Assigned bike " + bike + " to user " + user);
     }//GEN-LAST:event_btnAssignActionPerformed
+
+    private void txtBatteryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBatteryActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBatteryActionPerformed
 
     /**
      * @param args the command line arguments
@@ -843,6 +905,7 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
     private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btnUsers;
     private javax.swing.JButton btnViewQueue;
+    private javax.swing.JComboBox<String> cmbBikeType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -850,6 +913,7 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -866,8 +930,8 @@ public class BikeRentalAppGUI extends javax.swing.JFrame {
     private javax.swing.JTextArea txtAreaBikes;
     private javax.swing.JTextArea txtAreaQueue;
     private javax.swing.JTextArea txtAreaReturned;
+    private javax.swing.JTextField txtBattery;
     private javax.swing.JTextField txtBikeID;
-    private javax.swing.JTextField txtBikeType;
     private javax.swing.JTextField txtReturnBikeID;
     private javax.swing.JTextField txtReturnBikeModel;
     private javax.swing.JTextField txtUserID;

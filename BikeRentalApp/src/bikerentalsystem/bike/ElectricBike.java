@@ -27,6 +27,6 @@ public class ElectricBike extends Bike {
     
     @Override
     public String toString(){
-        return "Electric Bike -> " +super.toString() + ", Battery: "+ batteryLevel;
+        return "Electric Bike: " +super.toString() + ", Battery: "+ batteryLevel;
     }
 }
